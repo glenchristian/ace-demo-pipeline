@@ -18,6 +18,7 @@ import java.sql.Statement;
 import com.ibm.broker.javacompute.MbJavaComputeNode;
 import com.ibm.broker.plugin.MbElement;
 import com.ibm.broker.plugin.MbException;
+import com.ibm.broker.plugin.MbJSON;
 import com.ibm.broker.plugin.MbMessage;
 import com.ibm.broker.plugin.MbMessageAssembly;
 import com.ibm.broker.plugin.MbOutputTerminal;
@@ -55,7 +56,7 @@ public class PostIndex_UpdateDB extends MbJavaComputeNode {
       //teaName = (String)(inputLE.getFirstElementByPath("HTTP.Input.Path").getLastChild().getValue());
       MbElement inputRoot = outAssembly.getMessage().getRootElement();
       teaName = (String)(inputRoot.getFirstElementByPath("JSON/Data/name").getValue());
-      // This is an example only, and is oversimplified to minimise database
+      // This is an example only, and is oversimplified to minimize database
       // setup; most real database solutions would have tables pre-configured 
       // with a unique index on name, and possibly an auto-incrementing id column.
       stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -64,7 +65,16 @@ public class PostIndex_UpdateDB extends MbJavaComputeNode {
       if ( rs.first() )
       {
         // Already exists
-        throw new Exception("Tea "+teaName+" already exists");
+		MbElement rootElem = outAssembly.getMessage().getRootElement();
+		MbElement jsonData = rootElem.getFirstElementByPath("JSON");
+		jsonData.getFirstElementByPath("Data").delete();
+		jsonData = jsonData.createElementAsFirstChild(MbElement.TYPE_NAME);
+		jsonData.setName("Data");
+		jsonData.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "respCode", "40");
+		jsonData.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "respDesc", "Tea "+teaName+" already exists");
+		out.propagate(outAssembly);
+		
+        //throw new Exception("Tea "+teaName+" already exists");
       }
       // Unsafe - example only
       int newIndex = 0;
