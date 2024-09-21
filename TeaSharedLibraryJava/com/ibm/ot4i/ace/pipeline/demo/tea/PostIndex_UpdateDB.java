@@ -71,7 +71,7 @@ public class PostIndex_UpdateDB extends MbJavaComputeNode {
 		jsonData = jsonData.createElementAsFirstChild(MbElement.TYPE_NAME);
 		jsonData.setName("Data");
 		jsonData.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "respCode", "40");
-		jsonData.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "respDesc", "Tea "+teaName+" already exists!");
+		jsonData.createElementAsLastChild(MbElement.TYPE_NAME_VALUE, "respDesc", "Tea "+teaName+" already exists");
 		out.propagate(outAssembly);
 		
         //throw new Exception("Tea "+teaName+" already exists");
